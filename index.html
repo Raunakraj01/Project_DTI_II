@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediMind AI — Personalized Health Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050d0a;
+    --surface: #0b1a14;
+    --surface2: #0f2419;
+    --border: rgba(52, 211, 130, 0.12);
+    --green: #34d382;
+    --green-dim: #1a8f52;
+    --green-glow: rgba(52, 211, 130, 0.15);
+    --teal: #2dd4bf;
+    --amber: #fbbf24;
+    --rose: #fb7185;
+    --text: #e8f5ef;
+    --text-muted: #7aad94;
+    --text-faint: #3d6b54;
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ─── NOISE TEXTURE ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(5, 13, 10, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--green); }
+
+  .nav-cta {
+    background: var(--green);
+    color: var(--bg) !important;
+    padding: 0.5rem 1.25rem;
+    border-radius: 100px;
+    font-weight: 500 !important;
+    transition: box-shadow 0.2s, transform 0.2s !important;
+  }
+
+  .nav-cta:hover {
+    box-shadow: 0 0 24px rgba(52, 211, 130, 0.4) !important;
+    transform: translateY(-1px);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(52,211,130,0.08) 0%, rgba(45,212,191,0.04) 40%, transparent 70%);
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: orb-breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes orb-breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    50% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
+  }
+
+  .hero-rings {
+    position: absolute;
+    width: 900px; height: 900px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: ring-rotate linear infinite;
+  }
+
+  .ring:nth-child(1) { width: 400px; height: 400px; animation-duration: 20s; }
+  .ring:nth-child(2) { width: 600px; height: 600px; animation-duration: 35s; animation-direction: reverse; border-color: rgba(45,212,191,0.08); }
+  .ring:nth-child(3) { width: 800px; height: 800px; animation-duration: 50s; }
+
+  .ring::after {
+    content: '';
+    position: absolute;
+    width: 6px; height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    top: 0; left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px var(--green);
+  }
+
+  @keyframes ring-rotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(52, 211, 130, 0.08);
+    border: 1px solid rgba(52, 211, 130, 0.2);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.78rem;
+    color: var(--green);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    animation: fade-up 0.6s ease both;
+  }
+
+  .hero-badge-dot {
+    width: 5px; height: 5px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    max-width: 820px;
+    animation: fade-up 0.7s ease 0.1s both;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--green);
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 540px;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+    line-height: 1.7;
+    animation: fade-up 0.7s ease 0.2s both;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    animation: fade-up 0.7s ease 0.3s both;
+  }
+
+  .btn-primary {
+    background: var(--green);
+    color: var(--bg);
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 100px;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 32px rgba(52, 211, 130, 0.5);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    background: transparent;
+    padding: 0.875rem 2rem;
+    border-radius: 100px;
+    font-family: var(--sans);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-top: 4rem;
+    animation: fade-up 0.7s ease 0.4s both;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    color: var(--green);
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── SECTION WRAPPER ─── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 5rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--green);
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+    max-width: 600px;
+  }
+
+  .section-title em { font-style: italic; color: var(--green); }
+
+  .section-desc {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 480px;
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 3.5rem;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    max-width: 1200px;
+    margin: 0 auto;
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ─── FEATURES GRID ─── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--green-glow);
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 16px;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(52, 211, 130, 0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+
+  .feature-card:hover::before { opacity: 1; }
+
+  .feature-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .icon-green { background: rgba(52, 211, 130, 0.12); }
+  .icon-teal { background: rgba(45, 212, 191, 0.12); }
+  .icon-amber { background: rgba(251, 191, 36, 0.12); }
+  .icon-rose { background: rgba(251, 113, 133, 0.12); }
+
+  .feature-card h3 {
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin-bottom: 0.6rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-card p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+  }
+
+  .feature-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tag-core { background: rgba(52,211,130,0.1); color: var(--green); }
+  .tag-safety { background: rgba(251,113,133,0.1); color: var(--rose); }
+  .tag-ai { background: rgba(45,212,191,0.1); color: var(--teal); }
+  .tag-ux { background: rgba(251,191,36,0.1); color: var(--amber); }
+
+  /* ─── PROPOSAL SECTION ─── */
+  .proposal-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+  }
+
+  .proposal-header {
+    background: linear-gradient(135deg, var(--surface2), var(--surface));
+    padding: 3rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .proposal-header h2 {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    letter-spacing: -0.02em;
+    max-width: 480px;
+  }
+
+  .proposal-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
+  .proposal-meta span {
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .proposal-meta strong {
+    font-size: 0.85rem;
+    color: var(--green);
+  }
+
+  .proposal-modules {
+    padding: 2rem 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .module {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 1.5rem;
+    align-items: flex-start;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .module:last-child { border-bottom: none; }
+
+  .module-num {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    color: var(--text-faint);
+    line-height: 1;
+    padding-top: 0.1rem;
+  }
+
+  .module-body h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .module-body p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .module-body ul {
+    margin-top: 0.75rem;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .module-body ul li {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .module-body ul li::marker { color: var(--green); }
+
+  .module-priority {
+    font-size: 0.7rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.7rem;
+    border-radius: 100px;
+    white-space: nowrap;
+    font-weight: 500;
+    margin-top: 0.2rem;
+  }
+
+  .priority-high { background: rgba(251,113,133,0.1); color: var(--rose); border: 1px solid rgba(251,113,133,0.2); }
+  .priority-med { background: rgba(251,191,36,0.1); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+  .priority-core { background: rgba(52,211,130,0.1); color: var(--green); border: 1px solid rgba(52,211,130,0.2); }
+
+  /* ─── DASHBOARD PREVIEW ─── */
+  .dashboard-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    overflow: hidden;
+  }
+
+  .dash-topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .dash-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dash-dot:nth-child(1) { background: #ff5f56; }
+  .dash-dot:nth-child(2) { background: #ffbd2e; }
+  .dash-dot:nth-child(3) { background: #27c93f; }
+
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .dash-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .dash-card-label {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .dash-card-value {
+    font-family: var(--serif);
+    font-size: 2rem;
+    color: var(--green);
+    line-height: 1;
+    margin-bottom: 0.2rem;
+  }
+
+  .dash-card-sub {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+  }
+
+  .dash-chart {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    height: 100px;
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  .bar {
+    flex: 1;
+    border-radius: 3px 3px 0 0;
+    transition: height 0.5s ease;
+  }
+
+  .dash-bottom {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+  }
+
+  .dash-meds {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+  }
+
+  .dash-meds-title {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .med-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .med-item:last-child { border-bottom: none; }
+
+  .med-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .med-name { font-size: 0.8rem; color: var(--text-muted); flex: 1; }
+  .med-time { font-size: 0.72rem; color: var(--text-faint); }
+
+  .dash-risk {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .risk-ring {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    border: 3px solid var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.6rem;
+    box-shadow: 0 0 20px rgba(52,211,130,0.2);
+  }
+
+  .risk-score {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: var(--green);
+  }
+
+  .risk-label {
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ─── CTA ─── */
+  .cta-section {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box {
+    background: linear-gradient(135deg, var(--surface2) 0%, rgba(52,211,130,0.05) 100%);
+    border: 1px solid rgba(52,211,130,0.2);
+    border-radius: 24px;
+    padding: 5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-box::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(52,211,130,0.06), transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .cta-box h2 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+    position: relative;
+  }
+
+  .cta-box p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 420px;
+    margin: 0 auto 2.5rem;
+    font-weight: 300;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .cta-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-width: 100%;
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .footer-copy {
+    font-size: 0.78rem;
+    color: var(--text-faint);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 0.78rem;
+    color: var(--text-faint);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--green); }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 7rem 1.5rem 3rem; }
+    .hero-stats { gap: 2rem; }
+    .features-grid { grid-template-columns: 1fr; }
+    .proposal-modules { padding: 1.5rem; }
+    .module { grid-template-columns: 40px 1fr; }
+    .module-priority { display: none; }
+    .dash-grid { grid-template-columns: 1fr 1fr; }
+    .dash-bottom { grid-template-columns: 1fr; }
+    .cta-box { padding: 3rem 1.5rem; }
+    .cta-actions { flex-direction: column; align-items: center; }
+    footer { flex-direction: column; padding: 2rem 1.5rem; }
+    .proposal-header { flex-direction: column; }
+    .proposal-meta { align-items: flex-start; }
+    .hero-rings { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-dot"></div>
+    MediMind AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#proposal">Proposal</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#cta" class="nav-cta">Get Early Access</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-orb"></div>
+  <div class="hero-rings">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+  </div>
+
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    AI-Powered Healthcare Platform
+  </div>
+
+  <h1>Health intelligence,<br><em>built around you</em></h1>
+  <p>Personalized medication guidance, adaptive diet plans, and real-time health monitoring — all powered by advanced AI and designed around your unique biology.</p>
+
+  <div class="hero-actions">
+    <a href="#features" class="btn-primary">Explore Features</a>
+    <a href="#proposal" class="btn-secondary">Read Proposal</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-num">12+</span>
+      <span class="stat-label">AI Modules</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">98%</span>
+      <span class="stat-label">Accuracy Rate</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">256-bit</span>
+      <span class="stat-label">Encrypted</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="reveal">
+    <div class="section-label">Core Capabilities</div>
+    <h2 class="section-title">Everything your health needs, <em>intelligently</em></h2>
+    <p class="section-desc">A unified platform that monitors, predicts, and personalizes your healthcare journey with cutting-edge AI at every touchpoint.</p>
+  </div>
+
+  <div class="features-grid">
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-green">📡</div>
+      <h3>AI Health Monitoring</h3>
+      <p>Seamlessly integrates with wearables — Apple Watch, Fitbit, Garmin, and more — to continuously track heart rate, SpO₂, sleep quality, steps, and activity. Real-time anomaly detection surfaces health risks before they escalate.</p>
+      <span class="feature-tag tag-core">Core Module</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-teal">🧬</div>
+      <h3>Symptom Checker & Disease Prediction</h3>
+      <p>AI-powered symptom analysis cross-references your health history, demographics, and biomarkers to predict potential conditions and recommend evidence-based next steps — from home care to urgent specialist referral.</p>
+      <span class="feature-tag tag-ai">AI-Driven</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-rose">⚠️</div>
+      <h3>Drug Interaction & Allergy Detection</h3>
+      <p>Proactively checks every new prescription against your complete medication list, allergy profile, and genetic markers. Flags dangerous combinations instantly and suggests safe alternatives in collaboration with your care team.</p>
+      <span class="feature-tag tag-safety">Safety Critical</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-green">🥗</div>
+      <h3>Smart Meal Planning</h3>
+      <p>Auto-generates weekly meal plans factoring in your diagnoses, caloric targets, macronutrient needs, allergies, food preferences, and cultural background. Syncs with grocery delivery platforms for frictionless execution.</p>
+      <span class="feature-tag tag-core">Core Module</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-teal">🩺</div>
+      <h3>Doctor & Telemedicine Integration</h3>
+      <p>Schedule video consultations within the platform. AI-generated health summaries are automatically shared with your physician pre-appointment, reducing consultation time and improving diagnostic accuracy.</p>
+      <span class="feature-tag tag-ai">AI-Driven</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-amber">🧠</div>
+      <h3>Mental Health Support</h3>
+      <p>A compassionate AI companion checks in daily on mood, stress levels, and sleep sentiment. Detects patterns of anxiety or depression and connects users with licensed therapists or crisis resources as needed.</p>
+      <span class="feature-tag tag-ux">Engagement</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-teal">📊</div>
+      <h3>Personalized Health Dashboard</h3>
+      <p>A beautiful, unified view of your health trends: diet compliance, medication adherence, vital signs, fitness progress, and risk scores — all visualized over time with actionable AI insights surfaced proactively.</p>
+      <span class="feature-tag tag-ux">Engagement</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-amber">⏰</div>
+      <h3>Medication Reminder System</h3>
+      <p>Smart, context-aware reminders that adapt to your daily routine. Tracks adherence, logs missed doses, and alerts your care team if patterns of non-compliance could affect your treatment outcomes.</p>
+      <span class="feature-tag tag-core">Core Module</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-rose">🚨</div>
+      <h3>Emergency & Health Risk Alerts</h3>
+      <p>When wearable or manual vitals indicate critical thresholds — abnormal heart rhythm, dangerously high blood pressure, or rapid glucose changes — the platform immediately alerts the user, emergency contacts, and linked providers.</p>
+      <span class="feature-tag tag-safety">Safety Critical</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-green">📚</div>
+      <h3>Health Education Hub</h3>
+      <p>AI-curated articles, short videos, and interactive lifestyle guides tailored to your exact conditions and health goals. Content is continuously refined based on what resonates with users of similar profiles.</p>
+      <span class="feature-tag tag-ux">Engagement</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-teal">🔐</div>
+      <h3>Privacy & Security Layer</h3>
+      <p>End-to-end encryption protects all health data in transit and at rest. Users control granular data sharing permissions. HIPAA and GDPR compliant architecture with transparent, plain-language data usage policies.</p>
+      <span class="feature-tag tag-safety">Safety Critical</span>
+    </div>
+
+    <div class="feature-card reveal">
+      <div class="feature-icon icon-amber">👥</div>
+      <h3>Community & Support Groups</h3>
+      <p>Condition-specific forums connect users facing similar health journeys. Moderated by certified health professionals and AI content guardians to ensure advice remains safe, supportive, and evidence-based.</p>
+      <span class="feature-tag tag-ux">Engagement</span>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- DASHBOARD PREVIEW -->
+<section id="dashboard">
+  <div class="reveal">
+    <div class="section-label">Live Dashboard</div>
+    <h2 class="section-title">Your health, at a <em>glance</em></h2>
+    <p class="section-desc">A real-time command center for your wellbeing. Track every metric that matters in one beautifully unified interface.</p>
+  </div>
+
+  <div class="dashboard-preview reveal">
+    <div class="dash-topbar">
+      <div class="dash-dot"></div>
+      <div class="dash-dot"></div>
+      <div class="dash-dot"></div>
+    </div>
+
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="dash-card-label">Heart Rate</div>
+        <div class="dash-card-value">72</div>
+        <div class="dash-card-sub">bpm · Normal range</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-label">Sleep Quality</div>
+        <div class="dash-card-value" style="color: var(--teal);">87%</div>
+        <div class="dash-card-sub">6h 52m · Good</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-label">Glucose</div>
+        <div class="dash-card-value" style="color: var(--amber);">104</div>
+        <div class="dash-card-sub">mg/dL · Post-meal</div>
+      </div>
+    </div>
+
+    <div class="dash-chart" style="margin-bottom: 1rem;">
+      <div style="flex:1; display:flex; align-items:flex-end; gap:4px;">
+        <div class="bar" style="height:45%; background: rgba(52,211,130,0.3);"></div>
+        <div class="bar" style="height:60%; background: rgba(52,211,130,0.4);"></div>
+        <div class="bar" style="height:50%; background: rgba(52,211,130,0.3);"></div>
+        <div class="bar" style="height:75%; background: rgba(52,211,130,0.5);"></div>
+        <div class="bar" style="height:65%; background: rgba(52,211,130,0.4);"></div>
+        <div class="bar" style="height:80%; background: var(--green);"></div>
+        <div class="bar" style="height:70%; background: rgba(52,211,130,0.5);"></div>
+        <div class="bar" style="height:90%; background: var(--green); box-shadow: 0 0 8px var(--green);"></div>
+        <div class="bar" style="height:72%; background: rgba(52,211,130,0.5);"></div>
+        <div class="bar" style="height:55%; background: rgba(52,211,130,0.35);"></div>
+        <div class="bar" style="height:68%; background: rgba(52,211,130,0.45);"></div>
+        <div class="bar" style="height:85%; background: var(--green);"></div>
+      </div>
+    </div>
+
+    <div class="dash-bottom">
+      <div class="dash-meds">
+        <div class="dash-meds-title">Today's Medications</div>
+        <div class="med-item">
+          <div class="med-dot" style="background: var(--green);"></div>
+          <span class="med-name">Metformin 500mg</span>
+          <span class="med-time">✓ 8:00 AM</span>
+        </div>
+        <div class="med-item">
+          <div class="med-dot" style="background: var(--amber);"></div>
+          <span class="med-name">Lisinopril 10mg</span>
+          <span class="med-time">Due 1:00 PM</span>
+        </div>
+        <div class="med-item">
+          <div class="med-dot" style="background: var(--text-faint);"></div>
+          <span class="med-name">Vitamin D3 2000IU</span>
+          <span class="med-time">8:00 PM</span>
+        </div>
+      </div>
+      <div class="dash-risk">
+        <div class="risk-ring">
+          <span class="risk-score">92</span>
+        </div>
+        <div class="risk-label">Health Score</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- PROPOSAL -->
+<section id="proposal">
+  <div class="reveal">
+    <div class="section-label">Product Proposal</div>
+    <h2 class="section-title">Advanced feature <em>roadmap</em></h2>
+    <p class="section-desc">A structured product development proposal detailing our prioritized AI module expansion plan for maximum clinical impact and user engagement.</p>
+  </div>
+
+  <div class="proposal-wrap reveal">
+    <div class="proposal-header">
+      <div>
+        <h2>MediMind AI — Advanced Module Proposal</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem; font-weight: 300;">AI-Driven Healthcare Innovation · Product Development Proposal</p>
+      </div>
+      <div class="proposal-meta">
+        <span>Document Version</span>
+        <strong>v2.0 — 2025</strong>
+        <span>Category</span>
+        <strong>Digital Health Platform</strong>
+      </div>
+    </div>
+
+    <div class="proposal-modules">
+
+      <div class="module">
+        <div class="module-num">01</div>
+        <div class="module-body">
+          <h3>AI Health Monitoring & Wearable Integration</h3>
+          <p>Deploy a real-time biometric data pipeline connecting to all major wearable ecosystems. Use ML anomaly detection to identify deviations from baseline health patterns and generate predictive risk scores before clinical symptoms appear.</p>
+          <ul>
+            <li>Cross-platform SDK: Apple HealthKit, Google Fit, Fitbit, Garmin Connect</li>
+            <li>Real-time streaming vitals: HR, HRV, SpO₂, skin temperature, activity</li>
+            <li>ML-based longitudinal pattern analysis and personalized baselines</li>
+            <li>Automated health risk scoring with configurable alert thresholds</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-core">Core</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">02</div>
+        <div class="module-body">
+          <h3>Symptom Checker & Early Disease Prediction Engine</h3>
+          <p>A multimodal AI system that synthesizes self-reported symptoms, wearable data, medical history, and epidemiological context to generate ranked differential diagnoses with confidence scores and actionable clinical pathways.</p>
+          <ul>
+            <li>Natural language symptom input with clarifying follow-up questions</li>
+            <li>Integration of ICD-11 diagnostic codes and clinical decision trees</li>
+            <li>Triage classification: self-care / GP visit / urgent care / ER</li>
+            <li>Continuous model retraining from anonymized outcome data</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-high">High Priority</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">03</div>
+        <div class="module-body">
+          <h3>Drug Interaction & Allergy Detection System</h3>
+          <p>An AI safety layer that cross-checks every new medication against the user's full pharmacological profile, allergy history, renal/hepatic function, and genetic markers (where available) to proactively flag contraindications.</p>
+          <ul>
+            <li>Real-time lookup against FDA, WHO, and DrugBank interaction databases</li>
+            <li>Severity classification: minor / moderate / contraindicated</li>
+            <li>Alternative medication suggestions with physician notification</li>
+            <li>Pharmacogenomic profiling integration for personalized drug response</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-high">Safety Critical</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">04</div>
+        <div class="module-body">
+          <h3>Smart Meal Planning & Nutritional AI</h3>
+          <p>A generative AI system that creates dynamic, rotating weekly meal plans calibrated to each user's medical conditions, metabolic profile, food preferences, cultural background, and real-world constraints like budget and cooking skill.</p>
+          <ul>
+            <li>Medical nutrition therapy for diabetes, hypertension, CKD, and 20+ conditions</li>
+            <li>Macro/micronutrient optimization with supplement gap analysis</li>
+            <li>Grocery list generation with Instacart/Amazon Fresh API integration</li>
+            <li>Barcode scanning for real-time nutritional tracking and compliance scoring</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-core">Core</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">05</div>
+        <div class="module-body">
+          <h3>Doctor & Telemedicine Integration Hub</h3>
+          <p>Embed a full-featured telehealth layer including video consultations, secure messaging, and AI-generated pre-consultation summaries that give physicians a structured overview of the patient's recent health data.</p>
+          <ul>
+            <li>HIPAA-compliant video consultation with WebRTC infrastructure</li>
+            <li>AI pre-consultation brief: vitals trends, medication adherence, recent symptoms</li>
+            <li>EHR integration: Epic, Cerner, FHIR R4 standard compliance</li>
+            <li>Electronic prescription and lab order workflow within the platform</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-med">Medium</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">06</div>
+        <div class="module-body">
+          <h3>Mental Health AI Companion</h3>
+          <p>An evidence-based conversational AI that conducts daily mental health check-ins, tracks mood and stress biomarkers, delivers CBT-inspired micro-interventions, and seamlessly escalates to licensed therapists when risk indicators emerge.</p>
+          <ul>
+            <li>PHQ-9 and GAD-7 validated assessment integrations</li>
+            <li>Sentiment analysis on journal entries and chat for mood trend detection</li>
+            <li>Guided mindfulness, breathing exercises, and CBT tools</li>
+            <li>Crisis detection with immediate escalation to crisis lines or therapists</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-high">High Priority</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">07</div>
+        <div class="module-body">
+          <h3>Personalized Health Dashboard & Analytics</h3>
+          <p>A unified visual command center presenting longitudinal health data through intelligent, adaptive visualizations that highlight trends, celebrate milestones, and surface actionable insights rather than overwhelming users with raw data.</p>
+          <ul>
+            <li>Customizable widget layout with condition-specific metric prioritization</li>
+            <li>Predictive trend lines with confidence intervals for key biomarkers</li>
+            <li>Medication adherence heatmaps and diet compliance scoring</li>
+            <li>Monthly AI-generated health narrative reports, shareable with providers</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-core">Core</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">08</div>
+        <div class="module-body">
+          <h3>Smart Medication Reminder System</h3>
+          <p>An intelligent reminder engine that learns user behavior patterns to optimize notification timing, reduces alert fatigue through contextual delivery, and maintains a longitudinal adherence record accessible to care teams.</p>
+          <ul>
+            <li>ML-optimized notification timing based on daily routine analysis</li>
+            <li>Multi-modal delivery: push, SMS, smart speaker, smartwatch haptics</li>
+            <li>Refill prediction and pharmacy coordination automation</li>
+            <li>Missed dose protocol with severity-appropriate guidance</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-core">Core</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">09</div>
+        <div class="module-body">
+          <h3>Emergency & Health Risk Alert System</h3>
+          <p>A multi-tiered emergency response framework that detects critical health events from continuous biometric monitoring and executes a coordinated alert cascade to the user, emergency contacts, and linked healthcare providers within seconds.</p>
+          <ul>
+            <li>Configurable thresholds for 15+ critical vital parameters</li>
+            <li>Automated 911/emergency services location sharing with user consent</li>
+            <li>Emergency contact cascade with real-time health data transmission</li>
+            <li>Fall detection integration and post-event automated incident reporting</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-high">Safety Critical</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">10</div>
+        <div class="module-body">
+          <h3>AI-Curated Health Education Hub</h3>
+          <p>A personalized medical knowledge platform that curates peer-reviewed content, explainer videos, and condition management guides dynamically matched to each user's diagnoses, health literacy level, and current treatment plan.</p>
+          <ul>
+            <li>Content sourced from Mayo Clinic, NHS, PubMed, and verified partners</li>
+            <li>Adaptive reading level matching to user health literacy assessment</li>
+            <li>Interactive condition explainers with 3D anatomy visualizations</li>
+            <li>Daily health tip engine personalized to current treatment context</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-med">Medium</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">11</div>
+        <div class="module-body">
+          <h3>Privacy, Security & Compliance Architecture</h3>
+          <p>A comprehensive, trust-first data governance framework built on zero-knowledge principles, giving users absolute transparency and control over their health data while meeting all regulatory requirements across global jurisdictions.</p>
+          <ul>
+            <li>AES-256 end-to-end encryption for all data in transit and at rest</li>
+            <li>HIPAA, GDPR, PIPEDA, and Australia's My Health Record compliance</li>
+            <li>Granular user data control: view, export, or delete any data at any time</li>
+            <li>On-device AI processing options to minimize data transmission</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-high">Critical</div>
+      </div>
+
+      <div class="module">
+        <div class="module-num">12</div>
+        <div class="module-body">
+          <h3>Condition-Based Community & Support Platform</h3>
+          <p>Moderated peer support communities segmented by health condition, enabling users to share lived experiences, practical tips, and emotional support within a safe, clinically-supervised environment that complements formal care.</p>
+          <ul>
+            <li>AI content moderation to prevent harmful or inaccurate medical advice</li>
+            <li>Verified patient ambassador program with chronic condition specialists</li>
+            <li>Anonymous participation option with granular privacy controls</li>
+            <li>Weekly virtual group sessions facilitated by licensed health coaches</li>
+          </ul>
+        </div>
+        <div class="module-priority priority-med">Medium</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CTA -->
+<section id="cta" class="cta-section">
+  <div class="cta-box reveal">
+    <h2>Ready to transform your<br><em>health journey?</em></h2>
+    <p>Join thousands already using MediMind AI to take control of their wellbeing with intelligent, personalized healthcare support.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-primary">Get Early Access</a>
+      <a href="#proposal" class="btn-secondary">Read Full Proposal</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <a class="logo" href="#" style="font-size: 1rem;">
+      <div class="logo-dot"></div>
+      MediMind AI
+    </a>
+    <span class="footer-copy">© 2025 MediMind AI. All rights reserved.</span>
+  </div>
+  <ul class="footer-links">
+    <li><a href="#">Privacy Policy</a></li>
+    <li><a href="#">Terms of Service</a></li>
+    <li><a href="#">HIPAA Notice</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Animate bars on scroll
+  const chartObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.bar').forEach((bar, i) => {
+          const h = bar.style.height;
+          bar.style.height = '0%';
+          setTimeout(() => { bar.style.height = h; }, i * 60);
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.dash-chart').forEach(el => chartObserver.observe(el));
+</script>
+</body>
+</html>
